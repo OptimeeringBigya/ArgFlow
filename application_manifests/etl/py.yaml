@@ -4,7 +4,7 @@ metadata:
   generateName: cpython-
   namespace: argo-wf
 spec:
-  entrypoint: step-runner
+  entrypoint: complete-workflow
   arguments:
     parameters:
     - name: input_value
@@ -12,60 +12,53 @@ spec:
     - name: operation
       value: "nothing"
   templates:
-  - name: step-runner
+  - name: complete-workflow
     steps:
-      - - name: add
-          template: base-step
+      - - name: extract
+          template: extract
           arguments:
             parameters:
-              - name: operation
-                value: "+"
-              - name: input_value
-                value: "52"
-        - name: substract
-          template: base-step
-          arguments:
-            parameters:
-              - name: operation
-                value: "-"
-              - name: input_value
-                value: "52"
-      - - name: multiply
-          template: base-step
-          arguments:
-            parameters:
-              - name: operation
-                value: "*"
-              - name: input_value
-                value: "52"
-        - name: divide
-          template: base-step
-          arguments:
-            parameters:
-              - name: operation
-                value: "/"
-              - name: input_value
-                value: "52"
-      - - name: nada
-          template: base-step
-          arguments:
-            parameters:
-              - name: operation
-                value: "52"
-              - name: input_value
-                value: "52"
+              - name: country
+                value: "NO"
 
-  - name: base-step
+  - name: extract
     serviceAccountName: argo-wf-sa
     inputs:
       parameters:
-      - name: input_value
-      - name: operation
+      - name: country
     container:
       image: deceivious/arg_wf
       command:
       - python3
-      - "/app/main.py"
+      - "/app/extract.py"
       args:
-      - "{{inputs.parameters.input_value}}"
-      - "{{inputs.parameters.operation}}"
+      - "{{inputs.parameters.country}}"
+
+
+  - name: transform
+    serviceAccountName: argo-wf-sa
+    inputs:
+      parameters:
+      - name: regions
+    container:
+      image: deceivious/arg_wf
+      command:
+      - python3
+      - "/app/transform.py"
+      args:
+      - "{{inputs.parameters.regions}}"
+
+
+  - name: load
+    serviceAccountName: argo-wf-sa
+    inputs:
+      parameters:
+      - name: region_str
+    container:
+      image: deceivious/arg_wf
+      command:
+      - python3
+      - "/app/load.py"
+      args:
+      - "{{inputs.parameters.region_str}}"
+
