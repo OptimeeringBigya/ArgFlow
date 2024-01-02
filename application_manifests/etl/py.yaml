@@ -14,51 +14,61 @@ spec:
   templates:
   - name: complete-workflow
     steps:
-      - - name: extract
-          template: extract
-          arguments:
-            parameters:
-              - name: country
-                value: "NO"
+      - - name: test
+          template: tt
 
-  - name: extract
+#      - - name: extract
+#          template: extract
+#          arguments:
+#            parameters:
+#              - name: country
+#                value: "NO"
+  - name: tt
     serviceAccountName: argo-wf-sa
-    inputs:
-      parameters:
-      - name: country
-    container:
-      image: deceivious/arg_wf
-      command:
-      - python3
-      - "/app/extract.py"
-      args:
-      - "{{inputs.parameters.country}}"
+    script:
+      image: python:3.8
+      command: [python]
+      source: |
+          print("Hello")
 
-
-  - name: transform
-    serviceAccountName: argo-wf-sa
-    inputs:
-      parameters:
-      - name: regions
-    container:
-      image: deceivious/arg_wf
-      command:
-      - python3
-      - "/app/transform.py"
-      args:
-      - "{{inputs.parameters.regions}}"
-
-
-  - name: load
-    serviceAccountName: argo-wf-sa
-    inputs:
-      parameters:
-      - name: region_str
-    container:
-      image: deceivious/arg_wf
-      command:
-      - python3
-      - "/app/load.py"
-      args:
-      - "{{inputs.parameters.region_str}}"
-
+#  - name: extract
+#    serviceAccountName: argo-wf-sa
+#    inputs:
+#      parameters:
+#      - name: country
+#    container:
+#      image: deceivious/arg_wf
+#      command:
+#      - python3
+#      - "/app/extract.py"
+#      args:
+#      - "{{inputs.parameters.country}}"
+#
+#
+#  - name: transform
+#    serviceAccountName: argo-wf-sa
+#    inputs:
+#      parameters:
+#      - name: regions
+#    container:
+#      image: deceivious/arg_wf
+#      command:
+#      - python3
+#      - "/app/transform.py"
+#      args:
+#      - "{{inputs.parameters.regions}}"
+#
+#
+#  - name: load
+#    serviceAccountName: argo-wf-sa
+#    inputs:
+#      parameters:
+#      - name: region_str
+#    container:
+#      image: deceivious/arg_wf
+#      command:
+#      - python3
+#      - "/app/load.py"
+#      args:
+#      - "{{inputs.parameters.region_str}}"
+#
